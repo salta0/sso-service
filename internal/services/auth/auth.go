@@ -68,18 +68,18 @@ func (a *Auth) Login(ctx context.Context, email, password string, appID int) (st
 	user, err := a.usrProvider.User(ctx, email)
 	if err != nil {
 		if errors.Is(err, storage.ErrUserNotFound) {
-			a.log.Warn("user not found", err)
+			a.log.Warn("user not found", slog.String("error", err.Error()))
 
 			return "", fmt.Errorf("%s: %w", op, ErrorInvalidCreds)
 		}
 
-		a.log.Error("failed to get user", err)
+		a.log.Error("failed to get user", slog.String("error", err.Error()))
 
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	if err := bcrypt.CompareHashAndPassword(user.PassHash, []byte(password)); err != nil {
-		a.log.Warn("invalid credentials", err)
+		a.log.Warn("invalid credentials", slog.String("error", err.Error()))
 
 		return "", fmt.Errorf("%s: %w", op, ErrorInvalidCreds)
 	}
@@ -97,7 +97,7 @@ func (a *Auth) Login(ctx context.Context, email, password string, appID int) (st
 
 	token, err := jwt.NewToken(user, app, a.tokenTTL)
 	if err != nil {
-		a.log.Error("failed to generate token", err)
+		a.log.Error("failed to generate token", slog.String("error", err.Error()))
 
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
@@ -117,17 +117,17 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email, password string) (int
 
 	passHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		log.Error("failed to generate password hash", err)
+		log.Error("failed to generate password hash", slog.String("error", err.Error()))
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
 	id, err := a.usrSaver.SaveUser(ctx, email, passHash)
 	if err != nil {
 		if errors.Is(err, storage.ErrUserExists) {
-			log.Warn("user already exists", err)
+			log.Warn("user already exists", slog.String("error", err.Error()))
 			return 0, fmt.Errorf("%s: %w", op, ErrorUserExists)
 		}
-		log.Error("failed to save user", err)
+		log.Error("failed to save user", slog.String("error", err.Error()))
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 	log.Info("user registered")
@@ -149,12 +149,12 @@ func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 	isAdmin, err := a.usrProvider.IsAdmin(ctx, userID)
 	if err != nil {
 		if errors.Is(err, storage.ErrUserNotFound) {
-			log.Warn("user not found", err)
+			log.Warn("user not found", slog.String("error", err.Error()))
 
 			return false, fmt.Errorf("%s: %w", op, ErrorInvalidUserID)
 		}
 
-		a.log.Error("failed to check user id admin", err)
+		a.log.Error("failed to check user id admin", slog.String("error", err.Error()))
 		return false, fmt.Errorf("%s: %w", op, err)
 	}
 

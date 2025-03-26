@@ -53,15 +53,15 @@ func (s *serverAPI) Login(ctx context.Context, req *ssov1.LoginRequest) (*ssov1.
 
 func validateLogin(req *ssov1.LoginRequest) error {
 	if req.GetEmail() == "" {
-		return status.Error(codes.InvalidArgument, "email required")
+		return status.Error(codes.InvalidArgument, "email is required")
 	}
 
 	if req.GetPassword() == "" {
-		return status.Error(codes.InvalidArgument, "password required")
+		return status.Error(codes.InvalidArgument, "password is required")
 	}
 
 	if req.GetAppId() == emptyIntValue {
-		return status.Error(codes.InvalidArgument, "app_id required")
+		return status.Error(codes.InvalidArgument, "app_id is required")
 	}
 
 	return nil
@@ -85,11 +85,11 @@ func (s *serverAPI) Register(ctx context.Context, req *ssov1.RegisterRequest) (*
 
 func validateRegister(req *ssov1.RegisterRequest) error {
 	if req.GetEmail() == "" {
-		return status.Error(codes.InvalidArgument, "email required")
+		return status.Error(codes.InvalidArgument, "email is required")
 	}
 
 	if req.GetPassword() == "" {
-		return status.Error(codes.InvalidArgument, "password required")
+		return status.Error(codes.InvalidArgument, "password is required")
 	}
 
 	return nil
