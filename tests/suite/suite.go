@@ -23,6 +23,9 @@ type Suite struct {
 }
 
 func New(t *testing.T) (context.Context, *Suite) {
+	// TODO: use separate test db
+	// TODO: use separate seed service instead migrator
+
 	t.Helper()
 	t.Parallel()
 
